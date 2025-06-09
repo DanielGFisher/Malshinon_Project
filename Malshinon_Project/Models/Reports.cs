@@ -11,7 +11,6 @@ namespace Malshinon_Project.Models
         public int ReporterID { get; set; }
         public int TargetID { get; set; }
         public string Documentation { get; set; }
-        public DateTime TimeOfReport = DateTime.Now;
 
         public Reports(int reporterId, int targetId, string documentation)
         {

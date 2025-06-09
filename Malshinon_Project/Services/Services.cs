@@ -12,7 +12,7 @@ namespace Malshinon_Project.Services
         {
             try
             {
-                Console.WriteLine("Please enter your name: ");
+                Console.WriteLine("Please enter your full name (first and family): ");
                 string inputName = Console.ReadLine();
                 return inputName;
             }
@@ -24,6 +24,28 @@ namespace Malshinon_Project.Services
             {
                 Console.WriteLine("Running regardless");
             }
+            return null;
+        }
+
+        public static string IdentifyFirstName(string inputName)
+        {
+            try
+            {
+                int spaceIndex = inputName.IndexOf(' ');
+                string firstName = "";
+
+                if (spaceIndex > -1) firstName = inputName.Substring(0, spaceIndex);
+                return firstName;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Invalid Operation: {ex.Message}");
+            }
+            finally
+            {
+                Console.WriteLine("Running regardless");
+            }
+            return null;
         }
     }
 }

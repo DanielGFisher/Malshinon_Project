@@ -31,5 +31,5 @@ CREATE TABLE Reports (
     targetid INT,
     FOREIGN KEY (targetid) REFERENCES Targets(id),
     documentation TEXT,
-    timeOfReport DATETIME
+    timeOfReport DATETIME DEFAULT CURRENT_TIMESTAMP()
 );
