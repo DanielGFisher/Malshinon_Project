@@ -1,7 +1,7 @@
-﻿using MalshinonProject.Models;
-using MalshinonProject.DAL;
+﻿using Malshinon_Project.Models;
+using Malshinon_Project.DAL;
 
-namespace MalshinonProject
+namespace Malshinon_Project
 {
     public class Program
     {

@@ -34,5 +34,10 @@ namespace Malshinon_Project.DAL
                 _connection = null;
             }
         }
+
+        public MySqlConnection Connection()
+        {
+            return _connection;
+        }
     }
 }
