@@ -13,7 +13,7 @@ CREATE TABLE Agents (
 );
 
 -- Create the targets table
-CREATE TABLE Targets (
+CREATE TABLE People (
     id INT PRIMARY KEY AUTO_INCREMENT,
     firstName VARCHAR(45),
     lastName VARCHAR(45),
@@ -26,8 +26,10 @@ CREATE TABLE Targets (
 -- Create the Reports table
 CREATE TABLE Reports (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    FOREIGN KEY (id) REFERENCES Agents(id),
-    FOREIGN KEY (id) REFERENCES Targets(id),
+    agentid int,
+    FOREIGN KEY (agentid) REFERENCES Agents(id),
+    targetid INT,
+    FOREIGN KEY (targetid) REFERENCES Targets(id),
     documentation TEXT,
-    timeOfReport DATETIME DEFAULT NOW()
+    timeOfReport DATETIME
 );
