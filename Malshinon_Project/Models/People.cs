@@ -16,14 +16,21 @@ namespace Malshinon_Project.Models
         public int NumReports = 0;
         public int NumMentions = 0;
 
-        public Person(string firstName, string lastName,string secretCode, string type, int numReports, int numMentions)
+        public Person(string firstName, string lastName)
         {
             FirstName = firstName;
             LastName = lastName;
-            SecretCode = secretCode;
-            Type = type;
-            NumReports = numReports;
-            NumMentions = numMentions;
+        }
+
+        public string ShowSecretCode()
+        {
+            return SecretCode;
+        }
+
+        public string InsertIntoSecretCode()
+        {
+            SecretCode = Service.GenerateRandomString();
+            return SecretCode;
         }
     }
 }

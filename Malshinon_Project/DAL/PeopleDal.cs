@@ -48,12 +48,8 @@ namespace Malshinon_Project.DAL
                 {
                     string firstName = reader.GetString("firstName");
                     string lastName = reader.GetString("lastName");
-                    string secretCode = reader.GetString("secretCode");
-                    string type = reader.GetString("type");
-                    int numReports = reader.GetInt32("numReports");
-                    int numMentions = reader.GetInt32("numMentions");
 
-                    Person person = new Person(firstName, lastName, secretCode, type, numReports, numMentions);
+                    Person person = new Person(firstName, lastName);
                     return person;
                 }
             }
@@ -68,6 +64,31 @@ namespace Malshinon_Project.DAL
                 Dal.CloseConnection();
             }
             return null;
+        }
+
+        public Person AddNewPerson(Person person)
+        {
+            string query = $"INSERT INTO People(FirstName, LastName) VALUES(@firstName, @lastName);";
+            Dal.OpenConnection();
+            MySqlCommand cmd = null;
+
+            try
+            {
+                cmd = new MySqlCommand(query, Dal.Connection());
+                cmd.Parameters.AddWithValue(@"firstName", person.FirstName);
+                cmd.Parameters.AddWithValue(@"lastName", person.LastName);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error adding new person: {ex.Message}");
+            }
+            finally
+            {
+                Dal.CloseConnection();
+            }
+            return person;
         }
     }
 }

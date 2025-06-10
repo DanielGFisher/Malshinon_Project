@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Malshinon_Project.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -8,37 +10,31 @@ namespace Malshinon_Project.Services
 {
     public class Service
     {
+        // Gets name from user and returns it
         public static string GetUniqueCode()
         {
-            try
-            {
                 Console.WriteLine("Please enter your UniqueCode: ");
                 string UniqueCode = Console.ReadLine();
                 return UniqueCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Invalid Input: {ex.Message}");
-            }
-            finally
-            {
-                Console.WriteLine("Running regardless");
-            }
-            return null;
         }
 
+        // Creates randomised code and returns it
         public static string GenerateRandomString()
         {
-            string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            string result = "";
-            Random random = new Random();
+            string randomString = Guid.NewGuid().ToString();
+            return randomString;
+        }
 
-            for (int i = 0; i < 12 ; i++)
-            {
-                result += chars[random.Next(0,62)];
-            }
+        // Creates Person Object
+        public static Person CreateReporter(string firstName, string lastName)
+        {
+            Person reporter = new Person(firstName, lastName);
+            reporter.NumMentions = 0;
+            reporter.NumReports = 1;
+            reporter.InsertIntoSecretCode();
+            reporter.Type = "reporter";
 
-            return result;
+            return reporter;
         }
     }
 }
