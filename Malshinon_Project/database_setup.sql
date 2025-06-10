@@ -15,7 +15,7 @@ CREATE TABLE People (
 -- Create the Reports table
 CREATE TABLE Reports (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    agentid int,
+    reporterid int,
     FOREIGN KEY (agentid) REFERENCES Agents(id),
     targetid INT,
     FOREIGN KEY (targetid) REFERENCES Targets(id),

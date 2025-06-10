@@ -22,10 +22,11 @@ namespace Malshinon_Project.Services
         public static string GenerateRandomString()
         {
             string randomString = Guid.NewGuid().ToString();
+            string code = randomString.Substring(0);
             return randomString;
         }
 
-        // Creates Person Object
+        // Creates Reporter Person Object
         public static Person CreateReporter(string firstName, string lastName)
         {
             Person reporter = new Person(firstName, lastName);
@@ -35,6 +36,47 @@ namespace Malshinon_Project.Services
             reporter.Type = "reporter";
 
             return reporter;
+        }
+
+        // Creates Target Person Object
+        public static Person CreateTarget(string firstName, string lastName)
+        {
+            Person target = new Person(firstName, lastName);
+            target.NumMentions = 1;
+            target.NumReports = 0;
+            target.InsertIntoSecretCode();
+            target.Type = "target";
+
+            return target;
+        }
+
+        // Retrieves report and returns as string
+        public static string RetrieveReport()
+        {
+            Console.WriteLine("Enter a Report: ");
+            string textBlog = Console.ReadLine();
+            return textBlog;
+        }
+
+        // Checks reports threshold
+        public Boolean HasReports(int reportCount)
+        {
+            if (reportCount >= 10) return true;
+            else return false;
+        }
+
+        // Checks average text and report thresholds for potential and returns boolean
+        public static bool PotentialAgentVerification(int reportCount, int averageReportLength)
+        {
+            if (reportCount >= 10 && averageReportLength >= 100) return true;
+            else return false;
+        }
+
+        // Checks mention thresholds for threat and returns boolean
+        public static bool PotentialThreatVerification(int mentionCount)
+        {
+            if (mentionCount >= 20) return true;
+            else return false;
         }
     }
 }
