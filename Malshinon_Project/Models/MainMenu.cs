@@ -1,12 +1,11 @@
-﻿using Malshinon_Project.Models;
-using Malshinon_Project.DAL;
+﻿using Malshinon_Project.DAL;
 using Malshinon_Project.Services;
 using System.Diagnostics.Eventing.Reader;
 using System.Security.Cryptography.X509Certificates;
 using MySqlX.XDevAPI.CRUD;
 using MySqlX.XDevAPI.Common;
 
-namespace Malshinon_Project
+namespace Malshinon_Project.Models
 {
     public class Menu
     {

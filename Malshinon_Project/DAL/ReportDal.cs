@@ -1,12 +1,4 @@
 ﻿using MySql.Data.MySqlClient;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MySql.Data.MySqlClient;
-using Malshinon_Project.Models;
-using Malshinon_Project.Services;
 
 namespace Malshinon_Project.DAL
 {
@@ -60,7 +52,7 @@ namespace Malshinon_Project.DAL
             return log;
         }
 
-        public int AverageTextSize(string uniqueCode)
+        public double AverageTextSize(string uniqueCode)
         {
             string query = "Select AVG(LENGTH(documentation)) AS AverageLength  " +
                 "FROM reports " +
@@ -71,7 +63,7 @@ namespace Malshinon_Project.DAL
             MySqlCommand cmd = null;
             MySqlDataReader reader = null;
 
-            int count = 0;
+            double average = 0;
 
             try
             {
@@ -80,9 +72,9 @@ namespace Malshinon_Project.DAL
 
                 reader = cmd.ExecuteReader();
 
-                if (reader.Read())
+                if (reader.Read() && DBNull.Value != null)
                 {
-                    count = reader.GetInt32("AverageLength");
+                    average = reader.GetInt32("AverageLength");
                 }
             }
             catch (Exception ex)
@@ -93,7 +85,7 @@ namespace Malshinon_Project.DAL
             {
                 Dal.CloseConnection();
             }
-            return count;
+            return average;
         }
     }
 }
