@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Malshinon_Project.Models;
+using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using MySql.Data.MySqlClient;
-using Malshinon_Project.Models;
 
 namespace Malshinon_Project.DAL
 {
-    internal class PeopleDal
+    public class PeopleDal
     {
         private DAL Dal = new DAL();
         public PeopleDal()
@@ -29,10 +30,10 @@ namespace Malshinon_Project.DAL
             }
         }
 
-        public string AddNewPerson(Person person)
+        public Person AddNewPerson(Person person)
         {
-            string query = $"INSERT INTO People(FirstName, LastName) " +
-                $"VALUES(@firstName, @lastName);";
+            string query = $"INSERT INTO people(FirstName, LastName, SecretCode, Type, NumReports, NumMentions) " +
+                $"VALUES(@firstName, @lastName, @secretCode, @type, @numReports, @numMentions);";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
 
@@ -41,6 +42,10 @@ namespace Malshinon_Project.DAL
                 cmd = new MySqlCommand(query, Dal.Connection());
                 cmd.Parameters.AddWithValue(@"firstName", person.FirstName);
                 cmd.Parameters.AddWithValue(@"lastName", person.LastName);
+                cmd.Parameters.AddWithValue(@"secretCode", person.ShowSecretCode());
+                cmd.Parameters.AddWithValue(@"Type", person.Type);
+                cmd.Parameters.AddWithValue(@"NumReports", person.NumReports);
+                cmd.Parameters.AddWithValue(@"NumMentions", person.NumMentions);
 
                 cmd.ExecuteNonQuery();
             }
@@ -52,19 +57,13 @@ namespace Malshinon_Project.DAL
             {
                 Dal.CloseConnection();
             }
-            string log = $"New Person;\n" +
-                $"Name - {person.FirstName + " " + person.LastName}\n" +
-                $"Secret-Code - {person.ShowSecretCode}\n" +
-                $"Type - {person.Type}\n" +
-                $"Report Count - {person.NumReports}\n" +
-                $"Mention Count - {person.NumMentions}\n";
-            return log;
+            return person;
         }
 
         public int ReturnPersonID(string uniqueCode)
         {
-            string query = "SELECT * FROM People" +
-                " WHERE secretCode = @uniqueCode";
+            string query = "SELECT id FROM people " +
+                "WHERE secretCode = @uniqueCode";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
             MySqlDataReader reader = null;
@@ -95,11 +94,46 @@ namespace Malshinon_Project.DAL
             return id;
         }
 
+        public string ReturnPersonType(string uniqueCode)
+        {
+            string query = "SELECT type FROM people " +
+                "WHERE secretCode = @uniqueCode";
+            Dal.OpenConnection();
+            MySqlCommand cmd = null;
+            MySqlDataReader reader = null;
+
+            string type = null;
+            try
+            {
+                cmd = new MySqlCommand(query, Dal.Connection());
+                cmd.Parameters.AddWithValue(@"uniqueCode", uniqueCode);
+                reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    type = reader.GetString("type");
+                    return type;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Retrieval error: {ex.Message}");
+            }
+            finally
+            {
+                if (reader != null && !reader.IsClosed)
+                    reader.Close();
+                Dal.CloseConnection();
+            }
+            return type;
+        }
+
+
         public void IncrementNumReports(string uniqueCode)
         {
             string query = $"UPDATE people " +
-                $"SET numReports = reportNum + 1" +
-                $" WHERE secretCode = @uniqueCode";
+                $"SET numReports = numReports + 1 " +
+                $"WHERE secretCode = @uniqueCode";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
 
@@ -123,7 +157,7 @@ namespace Malshinon_Project.DAL
         public void IncrementNumMentions(string uniqueCode)
         {
             string query = $"UPDATE people " +
-                $"SET numMentions = reportNum + 1 " +
+                $"SET numMentions = numMentions + 1 " +
                 $"WHERE secretCode = @uniqueCode";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
@@ -148,22 +182,25 @@ namespace Malshinon_Project.DAL
         public int CountUserReports(string uniqueCode)
         {
             string query = "SELECT numReports " +
-                "FROM People" +
+                "FROM People " +
                 "WHERE secretCode = @uniqueCode;";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
+            MySqlDataReader reader = null;
+
             int count = 0;
 
             try
             {
                 cmd = new MySqlCommand(query, Dal.Connection());
                 cmd.Parameters.AddWithValue(@"uniqueCode", uniqueCode);
+                reader = cmd.ExecuteReader();
 
-                object result = cmd.ExecuteScalar();
-                if (result != null)
+                if (reader.Read())
                 {
-                    count = Convert.ToInt32(result);
+                    count = reader.GetInt32("numReports");
                 }
+                return count;
             }
             catch (Exception ex)
             {
@@ -178,22 +215,24 @@ namespace Malshinon_Project.DAL
 
         public int CountUserMentions(string uniqueCode)
         {
-            string query = "SELECT numMentions" +
-                "FROM People" +
+            string query = "SELECT numMentions " +
+                "FROM People " +
                 "WHERE secretCode = @uniqueCode;";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
-            int average = 0;
+            MySqlDataReader reader = null;
+
+            int count = 0;
 
             try
             {
                 cmd = new MySqlCommand(query, Dal.Connection());
                 cmd.Parameters.AddWithValue(@"uniqueCode", uniqueCode);
+                reader = cmd.ExecuteReader();
 
-                object result = cmd.ExecuteScalar();
-                if (result != null)
+                if (reader.Read())
                 {
-                    average = Convert.ToInt32(result);
+                    count = reader.GetInt32("numMentions");
                 }
             }
             catch (Exception ex)
@@ -204,13 +243,13 @@ namespace Malshinon_Project.DAL
             {
                 Dal.CloseConnection();
             }
-            return average;
+            return count;
         }
 
         public string UpdateStatusPotential(string uniqueCode)
         {
-            string query = "UPDATE People" +
-                "SET type = 'potential agent'" +
+            string query = "UPDATE people " +
+                "SET type = 'potential agent' " +
                 "WHERE secretCode = @uniqueCode";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
@@ -236,8 +275,8 @@ namespace Malshinon_Project.DAL
 
         public string UpdateStatusThreat(string uniqueCode)
         {
-            string query = "UPDATE People" +
-                "SET type = 'potential threat'" +
+            string query = "UPDATE people " +
+                "SET type = 'potential threat' " +
                 "WHERE secretCode = @uniqueCode";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
@@ -258,6 +297,33 @@ namespace Malshinon_Project.DAL
                 Dal.CloseConnection();
             }
             string log = $"Person with Secret-Code {uniqueCode} status changed to potential threat";
+            return log;
+        }
+
+        public string UpdateStatusBoth(string uniqueCode)
+        {
+            string query = "UPDATE people " +
+                "SET type = 'Both' " +
+                "WHERE secretCode = @uniqueCode";
+            Dal.OpenConnection();
+            MySqlCommand cmd = null;
+
+            try
+            {
+                cmd = new MySqlCommand(query, Dal.Connection());
+                cmd.Parameters.AddWithValue(@"uniqueCode", uniqueCode);
+
+                cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Update error: {ex.Message}");
+            }
+            finally
+            {
+                Dal.CloseConnection();
+            }
+            string log = $"Person with Secret-Code {uniqueCode} status changed to Both";
             return log;
         }
     }

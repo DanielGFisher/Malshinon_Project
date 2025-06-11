@@ -29,9 +29,10 @@ namespace Malshinon_Project.DAL
             }
         }
 
-        public string InsertNewReport(string reporterid, string targetid, string text)
+        public string InsertNewReport(int reporterid, int targetid, string text)
         {
-            string query = "INSERT INTO Reports(reporterid, targetid, documentation VALUES(@reporterID, @targetID, @Documentation);";
+            string query = "INSERT INTO reports(reporterid, targetid, documentation) " +
+                            "VALUES(@reporterID, @targetID, @documentation);";
             Dal.OpenConnection();
             MySqlCommand cmd = null;
 
@@ -40,7 +41,7 @@ namespace Malshinon_Project.DAL
                 cmd = new MySqlCommand(query, Dal.Connection());
                 cmd.Parameters.AddWithValue(@"reporterID", reporterid);
                 cmd.Parameters.AddWithValue(@"targetID", targetid);
-                cmd.Parameters.AddWithValue(@"Documentation", text);
+                cmd.Parameters.AddWithValue(@"documentation", text);
 
                 cmd.ExecuteNonQuery();
             }
@@ -62,22 +63,26 @@ namespace Malshinon_Project.DAL
         public int AverageTextSize(string uniqueCode)
         {
             string query = "Select AVG(LENGTH(documentation)) AS AverageLength  " +
-                "FROM Reports " +
-                "INNER JOIN People ON People.id = Reports.id " +
+                "FROM reports " +
+                "INNER JOIN People ON people.id = reports.id " +
                 "WHERE secretCode = @uniqueCode;";
+            
             Dal.OpenConnection();
             MySqlCommand cmd = null;
-            int average = 0;
+            MySqlDataReader reader = null;
+
+            int count = 0;
 
             try
             {
                 cmd = new MySqlCommand(query, Dal.Connection());
                 cmd.Parameters.AddWithValue(@"uniqueCode", uniqueCode);
 
-                object result = cmd.ExecuteScalar();
-                if (result != null)
+                reader = cmd.ExecuteReader();
+
+                if (reader.Read())
                 {
-                    average = Convert.ToInt32(result);
+                    count = reader.GetInt32("AverageLength");
                 }
             }
             catch (Exception ex)
@@ -88,7 +93,7 @@ namespace Malshinon_Project.DAL
             {
                 Dal.CloseConnection();
             }
-            return average;
+            return count;
         }
     }
 }

@@ -13,21 +13,33 @@ namespace Malshinon_Project.Services
         // Gets name from user and returns it
         public static string GetUniqueCode()
         {
+            try
+            {
                 Console.WriteLine("Please enter your UniqueCode: ");
-                string UniqueCode = Console.ReadLine();
-                return UniqueCode;
+                string uniqueCode = Console.ReadLine();
+
+                return uniqueCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Execution error: {ex.Message}");
+            }
+            finally
+            {
+                Console.WriteLine("Still running...");
+            }
+            return null;
         }
 
         // Creates randomised code and returns it
         public static string GenerateRandomString()
         {
             string randomString = Guid.NewGuid().ToString();
-            string code = randomString.Substring(0);
             return randomString;
         }
 
         // Creates Reporter Person Object
-        public static Person CreateReporter(string firstName, string lastName)
+        public static Person InitialiseReporter(string firstName, string lastName)
         {
             Person reporter = new Person(firstName, lastName);
             reporter.NumMentions = 0;
@@ -39,7 +51,7 @@ namespace Malshinon_Project.Services
         }
 
         // Creates Target Person Object
-        public static Person CreateTarget(string firstName, string lastName)
+        public static Person InitialiseTarget(string firstName, string lastName)
         {
             Person target = new Person(firstName, lastName);
             target.NumMentions = 1;
@@ -77,6 +89,18 @@ namespace Malshinon_Project.Services
         {
             if (mentionCount >= 20) return true;
             else return false;
+        }
+
+        // Creates a report for log when new person is created
+        public static string CreateNewPersonReport(Person person)
+        {
+            string log = $"New Person;\n" +
+                $"Name - {person.FirstName + " " + person.LastName}\n" +
+                $"Secret-Code - {person.ShowSecretCode}\n" +
+                $"Type - {person.Type}\n" +
+                $"Report Count - {person.NumReports}\n" +
+                $"Mention Count - {person.NumMentions}\n";
+            return log;
         }
     }
 }

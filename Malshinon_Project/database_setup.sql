@@ -16,9 +16,9 @@ CREATE TABLE People (
 CREATE TABLE Reports (
     id INT PRIMARY KEY AUTO_INCREMENT,
     reporterid int,
-    FOREIGN KEY (agentid) REFERENCES Agents(id),
+    FOREIGN KEY (reporterid) REFERENCES people(id),
     targetid INT,
-    FOREIGN KEY (targetid) REFERENCES Targets(id),
+    FOREIGN KEY (targetid) REFERENCES people(id),
     documentation TEXT,
     timeOfReport DATETIME DEFAULT CURRENT_TIMESTAMP()
 );

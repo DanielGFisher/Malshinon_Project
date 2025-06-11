@@ -8,14 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Services\Logger.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Services\Logger.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MySql.Data" Version="9.3.0" />
   </ItemGroup>
 

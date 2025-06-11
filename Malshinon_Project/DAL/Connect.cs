@@ -10,6 +10,7 @@ namespace Malshinon_Project.DAL
     public class DAL
     {
         private string ConnectionString = "server=localhost;user=root;password='';database=Malshinon";
+        private string script = File.ReadAllText(@"C:\Users\danie\OneDrive\Desktop\MyCSharpApp\Malshinon_Project\Malshinon_Project\database_setup.sql");
         private MySqlConnection _connection;
 
         public MySqlConnection OpenConnection()
